@@ -10,22 +10,24 @@ class DataTable {
 		this.data = data;
 		this.count = perPage;
 		this.tableClassName = tableClassName;
-		this.countOfPages = Math.ceil(data.length / this.count);
+		this.countOfPages = Math.ceil(this.data.length / this.count);
 		this.pages = [];
 		this.pageNumber = 1;
 	}
 	createTable( $dataTableContainer) {
+		
 		this.dataTableContainer =  $dataTableContainer;
 		const $table = document.createElement('table');
 		this.table = $table;
+		this.search();
 		this.dataTableContainer.appendChild($table);
 		this.dataTableContainer.classList.add(this.tableClassName);
-        this.createInput()
+		this.createInput();
 		this.createThead();
 		this.createTbody();
 		this.renderData();
 		this.createPagination();
-		this.sort();
+
 	}
 	createInput(){
 		const $chooseCount = document.createElement('div');
@@ -47,8 +49,36 @@ class DataTable {
 		const $tr = document.createElement('tr');
 		this.columns.forEach((column) => {
 			const $th = document.createElement('th');
-			$th.innerHTML = column;
+			$th.innerHTML = column.value;
+			$th.setAttribute('data-sort',column.sortId)
+			$th.setAttribute('data-sort-order','asc')
 			$tr.appendChild($th);
+
+			$th.addEventListener('click', (e) => {
+				const { sort, sortOrder } = e.target.dataset;
+				this.data = this.data.sort((a, b) =>{
+					if(typeof(a[sort]) === 'number') {
+						if (sortOrder === 'asc') {
+						 e.target.setAttribute('data-sort-order','desc') 
+						 return parseFloat(a[sort]) - parseFloat(b[sort]);
+						}else { 
+							e.target.setAttribute('data-sort-order','asc') 
+							return parseFloat(b[sort]) - parseFloat(a[sort]);
+						}
+					} 
+					else {
+						if (sortOrder === 'asc') {
+							e.target.setAttribute('data-sort-order','desc') 
+							return a[sort].localeCompare(b[sort]);;
+						   }else { 
+							   e.target.setAttribute('data-sort-order','asc') 
+							   return b[sort].localeCompare(a[sort]);;
+						   }
+						
+					}});	
+
+				this.goOnThePage();
+			});
 		});
 		$thead.appendChild($tr);
 		this.table.appendChild($thead);
@@ -99,26 +129,26 @@ class DataTable {
 		this.renderData();
 		this.pageNumber = 1;
 	}
-	sort(){
-let $checkbox = document.createElement('input');
-$checkbox.type = "checkbox";
-$checkbox.name = "name";
-$checkbox.value = "value";
-$checkbox.id = "checkbox1";
-let $label = document.createElement('label');
-$label.htmlFor = "checkbox1";
-$label.appendChild(document.createTextNode('Sort by age'));
-this.dataTableContainer.appendChild($checkbox);
-this.dataTableContainer.appendChild($label);
-$checkbox.addEventListener('click', ()=>{
-if($checkbox.checked){
-	this.data = this.data.sort((a, b) => parseFloat(a.age) - parseFloat(b.age));
-	this.goOnThePage();
-}
-//else if(!$checkbox.checked){this.data = this.originalData;
-// this.goOnThePage()};	
-})
+
+	search(){
+		const $search = document.createElement('div');
+		const $input = document.createElement('input');
+		const $button = document.createElement('button');
+		$search.appendChild($input);
+		$search.appendChild($button);
+		$button.innerHTML = 'Enter';
+		this.dataTableContainer.appendChild($search);
+		$button.onclick = () => {
+			this.data = [...this.originalData];
+			let newData = this.data.filter( (column) => column.name === $input.value)
+			this.data = newData;
+			this.countOfPages = Math.ceil( this.data.length / this.count);
+			this.createPagination();
+			 this.goOnThePage();
+			}
+			
+		 }
+		
 	}
 
-}
 export default DataTable;

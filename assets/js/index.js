@@ -1,6 +1,19 @@
 import DataTable from './DataTable.js';
 
 const columns = ['Id', 'Name', 'Age'];
+const columns1 = [
+	{
+	 value: 'Id',
+     sortId: 'id' 
+	},
+	{
+	 value: 'Name',
+	 sortId:'name'
+	},
+	{
+	 value: 'Age',
+     sortId: 'age'
+	}]
 
 const data = [
 	{
@@ -20,7 +33,7 @@ const data = [
 	},
 	{
 		id: 4,
-		name: 'Ani',
+		name: 'Tom',
 		age: 28,
 	},
 	{
@@ -35,7 +48,7 @@ const data = [
 	},
 	{
 		id: 7,
-		name: 'Alina',
+		name: 'Tom',
 		age: 33,
 	},
 	{
@@ -55,7 +68,7 @@ const data = [
 	},
 	{
 		id: 11,
-		name: 'Norik',
+		name: 'Tom',
 		age: 63,
 	},
 	{
@@ -125,7 +138,7 @@ const data = [
 	},
 ];
 
-const dataTable = new DataTable(columns, data, {
+const dataTable = new DataTable(columns1, data, {
 	perPage: 2,
 	rowClassName :'',
 	cellClassName: '',
