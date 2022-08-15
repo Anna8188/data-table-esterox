@@ -32,6 +32,9 @@ body {
 	flex-direction: column;
 	margin: 20px;
 }
+td{
+	text-align: center;
+}
 header {
 	display: flex;
 	justify-content: center;

@@ -13,6 +13,7 @@ class DataTable {
 		this.countOfPages = Math.ceil(this.data.length / this.count);
 		this.pages = [];
 		this.pageNumber = 1;
+		this.removedIndex = -1;
 	}
 	createTable( $dataTableContainer) {
 		
@@ -56,15 +57,14 @@ class DataTable {
 		const $thead = document.createElement('thead');
 		const $tr = document.createElement('tr');
 		const $remove = document.createElement('th');
-		const $imgRemove = document.createElement('img');
-		$imgRemove.src  = '';
+        const $delete = document.createElement('div');
+		$delete.innerHTML = 'Delete';
 		this.columns.forEach((column) => {
 			const $th = document.createElement('th');
 			$th.innerHTML = column.value;
 			$th.setAttribute('data-sort',column.sortId);
 			$th.setAttribute('data-sort-order','asc');
 			$tr.appendChild($th);
-			
 			$th.addEventListener('click', (e) => {
 				const { sort, sortOrder } = e.target.dataset;
 				this.data = this.data.sort((a, b) =>{
@@ -73,7 +73,7 @@ class DataTable {
 						 e.target.setAttribute('data-sort-order','desc') 
 						 return parseFloat(a[sort]) - parseFloat(b[sort]);
 						}else { 
-							e.target.setAttribute('data-sort-order','asc') e
+							e.target.setAttribute('data-sort-order','asc') 
 							return parseFloat(b[sort]) - parseFloat(a[sort]);
 						}
 					} else {
@@ -92,6 +92,7 @@ class DataTable {
 			
 		});
 		$tr.appendChild($remove);
+		$remove.appendChild($delete);
 		$thead.appendChild($tr);
 		this.table.appendChild($thead);
 	}
@@ -104,12 +105,21 @@ class DataTable {
 	renderData(
 		data = this.data.slice(this.pageNumber * this.count - this.count, this.pageNumber * this.count)
 	) {		
-		this.$trs = data.map((item) => {
+		this.$trs = data.map((item, index) => {			
+			const $removeTd = document.createElement('td');
+			const $imgRemove = document.createElement('img');
+			$imgRemove.src  = '../assets/images/delete.png';
+			$removeTd.appendChild($imgRemove);
+			$removeTd.addEventListener('click', ()=>{
+				this.removedIndex = item.id;
+                this.deleteItem();			
+			})
 			const $tr = document.createElement('tr');
 			for (const key in item) {
 				const $td = document.createElement('td');
 				$td.innerHTML = item[key];
 				$tr.appendChild($td);
+				$tr.appendChild($removeTd);			
 			}
 			return $tr;
 		});
@@ -160,6 +170,14 @@ class DataTable {
 			}
 			
 		 }
+	deleteItem(){
+		let remaining = this.data.filter(item => item.id !== this.removedIndex);
+		this.data = remaining;
+		console.log(this.removedIndex);
+		this.countOfPages = Math.ceil(this.data.length / this.count);
+		this.goOnThePage();
+		this.createPagination();
+	}	 
 		
 	}
 
