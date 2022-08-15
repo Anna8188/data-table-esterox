@@ -137,13 +137,13 @@ const data = [
 		age: 40,
 	},
 ];
-
-const dataTable = new DataTable(columns1, data, {
+const options =  {
 	perPage: 2,
 	rowClassName :'',
 	cellClassName: '',
 	tableClassName: 'data-table',
-});
+}
+const dataTable = new DataTable(columns1, data,options);
 const $dataTableContainer = document.querySelector('.data-table-container');
 dataTable.createTable($dataTableContainer);
 

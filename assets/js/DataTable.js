@@ -30,30 +30,41 @@ class DataTable {
 
 	}
 	createInput(){
-		const $chooseCount = document.createElement('div');
-		const $input = document.createElement('input');
-		const $button = document.createElement('button');
-		$chooseCount.appendChild($input);
-		$chooseCount.appendChild($button);
-		$button.innerHTML = 'Enter';
-	    this.dataTableContainer.appendChild($chooseCount);
-		$button.onclick = () => {
-           this.count = + $input.value;
-		   this.countOfPages = Math.ceil(this.data.length / this.count);
-		   this.createPagination();
-		   this.goOnThePage();
+		const $chooseCount = document.createElement('form');
+		const $label = document.createElement('label');
+		const $select = document.createElement('select');
+		
+	    for(let i = 2; i <= 10; i = i + 2){
+			const $option = document.createElement('option');
+			$option.value = i;
+			$option.innerHTML = i;
+			$select.appendChild($option);
+			$select.addEventListener("change", (event) => {
+				console.dir(event.target.value)
+				this.count = + event.target.value;
+				this.countOfPages = Math.ceil(this.data.length / this.count);
+				this.createPagination();
+				this.goOnThePage();
+			 })
 		}
+		$label.appendChild($select);
+		$chooseCount.appendChild($label);
+
+	    this.dataTableContainer.appendChild($chooseCount);
 	}
 	createThead() {
 		const $thead = document.createElement('thead');
 		const $tr = document.createElement('tr');
+		const $remove = document.createElement('th');
+		const $imgRemove = document.createElement('img');
+		$imgRemove.src  = '';
 		this.columns.forEach((column) => {
 			const $th = document.createElement('th');
 			$th.innerHTML = column.value;
-			$th.setAttribute('data-sort',column.sortId)
-			$th.setAttribute('data-sort-order','asc')
+			$th.setAttribute('data-sort',column.sortId);
+			$th.setAttribute('data-sort-order','asc');
 			$tr.appendChild($th);
-
+			
 			$th.addEventListener('click', (e) => {
 				const { sort, sortOrder } = e.target.dataset;
 				this.data = this.data.sort((a, b) =>{
@@ -62,24 +73,25 @@ class DataTable {
 						 e.target.setAttribute('data-sort-order','desc') 
 						 return parseFloat(a[sort]) - parseFloat(b[sort]);
 						}else { 
-							e.target.setAttribute('data-sort-order','asc') 
+							e.target.setAttribute('data-sort-order','asc') e
 							return parseFloat(b[sort]) - parseFloat(a[sort]);
 						}
-					} 
-					else {
+					} else {
 						if (sortOrder === 'asc') {
 							e.target.setAttribute('data-sort-order','desc') 
-							return a[sort].localeCompare(b[sort]);;
-						   }else { 
+							return a[sort].localeCompare(b[sort]);
+						   } else { 
 							   e.target.setAttribute('data-sort-order','asc') 
 							   return b[sort].localeCompare(a[sort]);;
 						   }
 						
-					}});	
-
+					}});
+					
 				this.goOnThePage();
 			});
+			
 		});
+		$tr.appendChild($remove);
 		$thead.appendChild($tr);
 		this.table.appendChild($thead);
 	}
